@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Details - CAMPUSS®</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="js/theme-config.js"></script>
+
+    <style>
+        /* CSS ANIMASI TERBANG (WAJIB ADA) */
+        .flying-img {
+            position: fixed;
+            z-index: 9999;
+            border-radius: 50%;
+            pointer-events: none;
+            transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+            opacity: 1;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            object-fit: cover;
+            border: 2px solid #1a3c2f;
+        }
+        
+        /* Animasi Getar Cart */
+        @keyframes shakeCart {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(-15deg); }
+            75% { transform: rotate(15deg); }
+        }
+        .cart-shake {
+            animation: shakeCart 0.4s ease-in-out;
+            color: #1a3c2f; 
+        }
+
+        /* Fade In Effect */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body class="font-body antialiased text-[#1a3c2f] bg-white">
+
+    <nav class="w-full px-6 md:px-12 py-5 flex justify-between items-center border-b border-gray-200 sticky top-0 bg-white/95 backdrop-blur-sm z-50 transition-all shadow-sm">
+        
+        <a href="index.html" class="text-3xl font-headline tracking-tighter text-[#1a3c2f] hover:opacity-80 transition">
+            CAMPUSS®
+        </a>
+        
+        <div class="hidden md:flex items-center gap-12 absolute left-1/2 -translate-x-1/2">
+            <a href="index.html#shop" class="text-sm font-bold uppercase tracking-[0.15em] text-[#1a3c2f] hover:text-gray-500 transition relative group">
+                Shop
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="index.html#exclusive-showcase" class="text-sm font-bold uppercase tracking-[0.15em] text-[#1a3c2f] hover:text-gray-500 transition relative group">
+                Campaign
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="collection.html" class="text-sm font-bold uppercase tracking-[0.15em] text-[#1a3c2f] hover:text-gray-500 transition relative group">
+                Collections
+                <span class="absolute -bottom-1 left-0 w-0 h-0.5 bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </div>
+
+        <div class="flex gap-6 items-center">
+            
+            <div class="relative hidden md:block w-56">
+                <input type="text" id="navbarSearchInput" placeholder="SEARCH..." 
+                    class="w-full bg-gray-50 border-b border-transparent focus:border-[#1a3c2f] py-1 pl-2 pr-8 text-[11px] font-bold uppercase tracking-widest focus:outline-none focus:bg-white transition text-[#1a3c2f] placeholder-gray-400">
+                <i class="fa-solid fa-magnifying-glass absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 text-xs pointer-events-none"></i>
+            </div>
+            
+            <a href="cart.html" class="relative group" id="cart-nav-icon">
+                <i class="fa-solid fa-bag-shopping text-xl text-[#1a3c2f] group-hover:text-gray-500 transition"></i>
+                <span id="cart-badge" class="absolute -top-1 -right-2 bg-red-600 text-white text-[9px] font-bold rounded-full h-4 w-4 flex items-center justify-center transform scale-0 transition-transform duration-300 border border-white">0</span>
+            </a>
+
+            <div class="relative group" id="authContainer">
+                <span id="loginBtn" class="text-xs font-bold uppercase tracking-widest cursor-pointer hover:underline text-[#1a3c2f]">Login</span>
+                
+                <div id="loggedInState" class="hidden relative">
+                    <button class="focus:outline-none py-1">
+                        <i class="fa-solid fa-user text-xl text-[#1a3c2f] hover:text-gray-500 transition"></i>
+                    </button>
+                    <div class="absolute right-0 top-full mt-2 w-48 bg-white border border-gray-100 shadow-xl rounded-sm py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                        <div id="userNameDisplay" class="px-4 py-3 border-b border-gray-100 font-bold text-xs text-[#1a3c2f] uppercase tracking-wider truncate bg-gray-50">
+                            Hi, User
+                        </div>
+                        <a href="profile.html" class="block px-4 py-3 text-xs text-gray-500 hover:bg-gray-50 hover:text-[#1a3c2f] transition">
+                            <i class="fa-regular fa-id-card mr-2"></i> My Profile
+                        </a>
+                        <a href="orders.html" class="block px-4 py-3 text-xs text-gray-500 hover:bg-gray-50 hover:text-[#1a3c2f] transition">
+                            <i class="fa-solid fa-box-open mr-2"></i> My Orders
+                        </a>
+                        <button id="logoutBtn" class="w-full text-left px-4 py-3 text-xs text-red-500 hover:bg-red-50 font-bold uppercase transition border-t border-gray-100">
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div id="detailContainer" class="container mx-auto px-6 py-10 min-h-screen flex items-center justify-center">
+        <div class="text-center animate-pulse">
+            <i class="fa-solid fa-circle-notch fa-spin text-4xl text-gray-300 mb-4"></i>
+            <p class="text-gray-400 uppercase tracking-widest text-sm">Loading Product...</p>
+        </div>
+    </div>
+
+   <div id="paymentModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="closePaymentArea"></div>
+    
+    <div class="relative w-full max-w-lg bg-white p-6 md:p-8 shadow-2xl rounded-sm transform transition-all max-h-[90vh] overflow-y-auto z-10">
+        <button id="closePaymentBtn" class="absolute top-4 right-4 text-xl hover:text-red-500 transition"><i class="fa-solid fa-times"></i></button>
+        
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-headline uppercase text-[#1a3c2f] mb-2">Checkout</h2>
+            <p class="text-xs text-gray-400 uppercase tracking-widest">Secure Payment</p>
+        </div>
+
+        <div class="bg-gray-50 p-4 rounded mb-6 flex gap-4 items-center border border-gray-100">
+            <img id="payImg" src="" class="w-16 h-16 object-cover rounded shadow-sm bg-white">
+            <div>
+                <h4 id="payName" class="font-bold uppercase text-sm text-[#1a3c2f]">Product Name</h4>
+                <p id="payDetail" class="text-xs text-gray-500">Size: -</p>
+                <p id="payPrice" class="font-bold text-[#1a3c2f] mt-1">IDR 0</p>
+            </div>
+        </div>
+
+        <form id="paymentForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1 text-gray-500">Full Name</label>
+                <input type="text" id="payNameInput" required class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm bg-white">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1 text-gray-500">Shipping Address</label>
+                <textarea id="payAddressInput" required rows="2" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm bg-white"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1 text-gray-500">Payment Method</label>
+                <div class="relative">
+                   <select id="paymentMethodSelect" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm bg-white appearance-none cursor-pointer">
+    <option value="">Select Payment Method</option>
+    <option value="bca_va">BCA Virtual Account</option>
+    <option value="mandiri_va">Mandiri Virtual Account</option>
+    <option value="qris">QRIS / E-Wallet</option>
+    <option value="cod">Cash On Delivery (COD)</option> </select>
+                    </select>
+                    <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                </div>
+            </div>
+            
+            <div id="paymentInstruction" class="hidden transition-all duration-300"></div>
+
+            <button type="submit" class="w-full bg-[#1a3c2f] text-white py-4 font-bold uppercase tracking-widest hover:bg-[#2c5f4b] transition mt-6 shadow-lg rounded-sm flex justify-center items-center gap-2 group">
+                <span>Confirm Payment</span>
+                <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+    <script src="js/products.js"></script>
+    <script src="js/detail.js"></script>
+</body>
+</html>

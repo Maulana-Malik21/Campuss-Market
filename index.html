@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CAMPUSS® — INTERNATIONAL</title>
+   
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+    <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.3.0/model-viewer.min.js"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+
+    <script src="js/theme-config.js"></script>
+
+    <style>
+        body { background-color: #f2f0ea; color: #1a3c2f; overflow-x: hidden; }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f2f0ea; }
+        ::-webkit-scrollbar-thumb { background: #1a3c2f; border-radius: 4px; }
+        #preloader {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: #1a3c2f; z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+            color: #f2f0ea;
+        }
+        .marquee-container { overflow: hidden; white-space: nowrap; }
+        .marquee-content { display: inline-block; animation: marquee 20s linear infinite; }
+        @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .product-card:hover .product-img { transform: scale(1.05); }
+
+    /* FIX UTAMA: Mencegah layar goyang/scroll samping */
+    html, body {
+        width: 100%;
+        overflow-x: hidden;
+        position: relative;
+        margin: 0; 
+        padding: 0;
+    }
+    
+    /* Memastikan Mobile Menu selalu di atas segalanya */
+    #mobileMenu {
+        z-index: 9999 !important;
+    }
+    
+    /* Sembunyikan scrollbar saat menu terbuka (dikontrol JS) */
+    body.menu-open {
+        overflow: hidden !important;
+    }
+
+/* Menghilangkan scrollbar tapi tetap mengizinkan scroll */
+.hide-scroll::-webkit-scrollbar {
+    display: none;
+}
+.hide-scroll {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+/* Style kursor saat digeser */
+.cursor-grab { cursor: grab; }
+.cursor-grabbing { cursor: grabbing !important; }
+
+/* Tambahkan class ini di dalam tag <style> */
+.slider-wrapper {
+    transition: transform 0.7s cubic-bezier(0.25, 1, 0.5, 1); /* Efek smooth */
+}
+/* 1. Container Utama */
+/* --- 1. CSS UTAMA SLIDER (BANNER) --- */
+.slider-container {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    aspect-ratio: 2/1; /* Mobile */
+}
+
+@media (min-width: 768px) {
+    .slider-container {
+        aspect-ratio: 3/1; /* Desktop */
+    }
+}
+
+.slider-track {
+    display: flex; 
+    height: 100%;
+    transition: transform 0.5s ease-in-out;
+    will-change: transform;
+}
+
+.slide {
+    min-width: 100%;
+    height: 100%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.slide img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 1;
+}
+
+.slide-content {
+    position: relative;
+    z-index: 10;
+    text-align: center;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0,0,0,0.7);
+}
+
+/* Tombol Slider Banner (MUNCUL DI SEMUA LAYAR) */
+.slider-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #1a3c2f;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    display: flex; /* Flex agar icon di tengah */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 50;
+    border: none;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: background-color 0.2s;
+}
+.slider-nav-btn:hover { background-color: white; }
+.slider-nav-btn.left { left: 10px; }
+.slider-nav-btn.right { right: 10px; }
+
+
+/* --- 2. CSS BARU UNTUK TOMBOL MENU ICON (Mobile Only) --- */
+.menu-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 28px;
+    height: 28px;
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #1a3c2f;
+    font-size: 10px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    z-index: 30;
+    cursor: pointer;
+}
+/* Hanya muncul di Mobile (hidden di md ke atas) */
+@media (min-width: 768px) {
+    .menu-nav-btn { display: none; }
+}
+.menu-nav-btn.left { left: -10px; }
+.menu-nav-btn.right { right: -10px; }
+    </style>
+</head>
+<body class="font-body antialiased selection:bg-brand-green selection:text-brand-bone">
+
+    <div id="preloader">
+        <h1 class="text-6xl md:text-9xl font-headline tracking-widest uppercase opacity-0" id="loader-text">CAMPUSS®</h1>
+    </div>
+
+<nav class="fixed top-0 left-0 w-full bg-white/95 backdrop-blur-md border-b border-gray-200 z-[900] transition-all duration-300">
+    
+    <div class="max-w-[1920px] mx-auto px-6 md:px-10 h-20 flex items-center justify-between relative">
+        
+        <div class="flex-1 flex justify-start items-center z-[910] pointer-events-none">
+            <a href="index.html" class="block pointer-events-auto">
+                <h1 class="text-2xl md:text-3xl font-headline tracking-tighter text-[#1a3c2f] hover:opacity-80 transition whitespace-nowrap">
+                    COMPASS®
+                </h1>
+            </a>
+        </div>
+        
+        <div class="hidden md:flex absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 items-center gap-8 lg:gap-12 z-[950]">
+             <a href="index.html" class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1a3c2f] hover:text-gray-500 transition relative group py-2">
+                Home
+                <span class="absolute bottom-0 left-0 w-0 h-[1px] bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="index.html#shop" class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1a3c2f] hover:text-gray-500 transition relative group py-2">
+                Shop 
+                <span class="absolute bottom-0 left-0 w-0 h-[1px] bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+            <a href="collection.html" class="text-[11px] font-bold uppercase tracking-[0.2em] text-[#1a3c2f] hover:text-gray-500 transition relative group py-2">
+                Collections
+                <span class="absolute bottom-0 left-0 w-0 h-[1px] bg-[#1a3c2f] transition-all duration-300 group-hover:w-full"></span>
+            </a>
+        </div>
+
+        <div class="flex-1 flex justify-end items-center gap-5 z-[910] pointer-events-none">
+            
+            <div class="hidden md:flex items-center relative w-40 lg:w-48 border-b border-gray-300 pb-1 mr-2 group focus-within:border-[#1a3c2f] transition-colors pointer-events-auto">
+                <input type="text" id="navbarSearchInput" placeholder="SEARCH..." 
+                    class="w-full bg-transparent border-none p-0 text-[10px] font-bold uppercase tracking-widest text-[#1a3c2f] placeholder-gray-400 focus:ring-0 focus:outline-none h-full">
+                <i class="fa-solid fa-magnifying-glass text-gray-400 text-xs absolute right-0 group-focus-within:text-[#1a3c2f] transition-colors"></i>
+            </div>
+            
+            <a href="cart.html" class="relative group flex items-center justify-center w-8 h-8 pointer-events-auto" id="cart-nav-icon">
+                <i class="fa-solid fa-bag-shopping text-xl text-[#1a3c2f] hover:text-gray-600 transition"></i>
+                <span id="cart-badge" class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold rounded-full h-3.5 w-3.5 flex items-center justify-center transform scale-0 transition-transform duration-300 border border-white">0</span>
+            </a>
+
+            <div class="h-4 w-[1px] bg-gray-300 hidden md:block"></div>
+<div class="relative group flex items-center justify-center pointer-events-auto" id="authContainer">
+    
+    <span id="loginBtn" class="hidden md:block text-[10px] font-bold uppercase tracking-widest cursor-pointer hover:text-gray-500 transition pt-0.5">
+        Login
+    </span>
+
+    <span id="mobileLoginBtn" class="md:hidden text-[10px] font-bold uppercase tracking-widest cursor-pointer text-[#1a3c2f] mr-1">
+        Login
+    </span>
+    
+    <div class="hidden md:block"> 
+        <div id="loggedInState" class="hidden relative">
+            <button class="focus:outline-none flex items-center justify-center w-8 h-8">
+                <i class="fa-solid fa-user text-lg text-[#1a3c2f]"></i>
+            </button>
+            <div class="absolute right-0 top-full mt-4 w-48 bg-white border border-gray-100 shadow-xl rounded-sm py-2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 transform origin-top-right">
+                <div id="userNameDisplay" class="px-4 py-3 border-b border-gray-100 font-bold text-[10px] text-gray-400 uppercase tracking-widest">User</div>
+                <a href="profile.html" class="block px-4 py-2 text-xs text-[#1a3c2f] hover:bg-gray-50 transition">My Profile</a>
+                <a href="orders.html" class="block px-4 py-2 text-xs text-[#1a3c2f] hover:bg-gray-50 transition">My Orders</a>
+                <button id="logoutBtn" class="w-full text-left px-4 py-2 text-xs text-red-600 hover:bg-red-50 transition font-bold uppercase mt-1 border-t border-gray-50">Logout</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="relative md:hidden">
+        <i class="fa-solid fa-user text-xl text-[#1a3c2f] cursor-pointer hidden" id="mobileLoginIcon"></i>
+        
+        <div id="mobileUserDropdown" class="hidden absolute right-0 top-full mt-4 w-48 bg-white border border-gray-200 shadow-2xl rounded-sm py-2 z-[1000] origin-top-right">
+            <div class="absolute -top-1 right-1 w-3 h-3 bg-white border-t border-l border-gray-200 transform rotate-45"></div>
+            
+            <div id="mobileUserNameDisplay" class="px-4 py-3 border-b border-gray-100 font-bold text-[10px] text-gray-400 uppercase tracking-widest bg-gray-50">Hi, User</div>
+            <a href="profile.html" class="block px-4 py-3 text-xs text-[#1a3c2f] hover:bg-gray-50 border-b border-gray-50">
+                <i class="fa-regular fa-id-card mr-2 text-gray-400"></i> My Profile
+            </a>
+            <a href="orders.html" class="block px-4 py-3 text-xs text-[#1a3c2f] hover:bg-gray-50 border-b border-gray-50">
+                <i class="fa-solid fa-box-open mr-2 text-gray-400"></i> My Orders
+            </a>
+            <button id="mobileLogoutBtn" class="w-full text-left px-4 py-3 text-xs text-red-600 hover:bg-red-50 font-bold uppercase">
+                Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+            <button id="mobileMenuBtn" class="md:hidden text-2xl text-[#1a3c2f] focus:outline-none ml-2 flex items-center justify-center w-8 h-8 pointer-events-auto">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+    </div>
+</nav>
+
+<header class="bg-[#f2f0ea] pt-24 pb-6 md:pt-32 relative overflow-hidden">
+    
+    <div class="container mx-auto px-4 md:px-8 relative z-10">
+        
+        <div class="slider-container group">
+            
+            <div id="sliderTrack" class="slider-track">
+                
+                <div class="slide bg-gray-300">
+                    <img src="./assets/Gemini_Generated_Image_71q7hr71q7hr71q7.png" alt="Promo 1">
+                    <div class="slide-content">
+                        </div>
+                </div>
+
+                <div class="slide bg-gray-400">
+                    <img src="https://img.lazcdn.com/g/tps/imgextra/i3/O1CN01wvw9i51Szh1uG1CkG_!!6000000002318-0-tps-1976-688.jpg_2200x2200q80.jpg_.avif" alt="Promo 2">
+                </div>
+
+                <div class="slide bg-gray-500">
+                    <img src="https://m.media-amazon.com/images/I/81H-rqTT6QL._SX3000_.jpg" alt="Promo 3">
+                </div>
+
+            </div>
+
+            <button id="prevBtn" class="slider-nav-btn left">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+            <button id="nextBtn" class="slider-nav-btn right">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </div>
+
+        <div class="bg-white mt-6 p-4 rounded-xl shadow-sm border border-gray-100 relative z-20 mx-4 md:mx-0">
+            
+            <button id="menuPrevBtn" class="menu-nav-btn left">
+                <i class="fa-solid fa-chevron-left"></i>
+            </button>
+
+            <div id="iconMenu" class="flex md:justify-around overflow-x-auto hide-scroll gap-6 md:gap-4 w-full px-2 cursor-grab active:cursor-grabbing pb-2 scroll-smooth">
+                
+                <div class="flex flex-col items-center gap-2 min-w-[60px] shrink-0 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-[18px] bg-red-50 border border-red-100 flex items-center justify-center text-red-500 group-hover:bg-red-500 group-hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-tags text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-600 uppercase text-center leading-tight">Diskon<br>50%</span>
+                </div>
+                
+                <div class="flex flex-col items-center gap-2 min-w-[60px] shrink-0 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-[18px] bg-green-50 border border-green-100 flex items-center justify-center text-green-600 group-hover:bg-green-600 group-hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-truck text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-600 uppercase text-center leading-tight">Free<br>Ongkir</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 min-w-[60px] shrink-0 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-[18px] bg-blue-50 border border-blue-100 flex items-center justify-center text-blue-600 group-hover:bg-blue-600 group-hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-graduation-cap text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-600 uppercase text-center leading-tight">Student<br>Deal</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 min-w-[60px] shrink-0 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-[18px] bg-purple-50 border border-purple-100 flex items-center justify-center text-purple-600 group-hover:bg-purple-600 group-hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-ticket text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-600 uppercase text-center leading-tight">Voucher<br>Saya</span>
+                </div>
+
+                <div class="flex flex-col items-center gap-2 min-w-[60px] shrink-0 cursor-pointer group">
+                    <div class="w-12 h-12 rounded-[18px] bg-yellow-50 border border-yellow-100 flex items-center justify-center text-yellow-600 group-hover:bg-yellow-500 group-hover:text-white transition shadow-sm">
+                        <i class="fa-solid fa-coins text-lg"></i>
+                    </div>
+                    <span class="text-[10px] font-bold text-gray-600 uppercase text-center leading-tight">Koin<br>Campuss</span>
+                </div>
+
+            </div>
+
+            <button id="menuNextBtn" class="menu-nav-btn right">
+                <i class="fa-solid fa-chevron-right"></i>
+            </button>
+
+        </div>
+        
+    </div>
+</header>
+
+    <div class="bg-brand-green text-brand-bone py-4 border-y border-brand-bone overflow-hidden z-20 relative">
+        <div class="marquee-container font-headline text-4xl uppercase tracking-wider">
+            <div class="marquee-content">
+                &nbsp;Everyone is Moving — Buatan Indonesia — Gazelle Vintage — Retrograde — Proto 1 — Everyone is Moving — Buatan Indonesia — Gazelle Vintage — Retrograde — Proto 1
+            </div>
+            <div class="marquee-content" aria-hidden="true">
+                &nbsp;Everyone is Moving — Buatan Indonesia — Gazelle Vintage — Retrograde — Proto 1 — Everyone is Moving — Buatan Indonesia — Gazelle Vintage — Retrograde — Proto 1
+            </div>
+        </div>
+    </div>
+
+    <section id="campaign" class="py-20 bg-[#1a3c2f] text-white overflow-hidden relative">
+        <div class="absolute top-0 right-0 opacity-5 pointer-events-none">
+            <i class="fa-solid fa-compass text-[400px] -mr-20 -mt-20"></i>
+        </div>
+
+        <div class="container mx-auto px-6 relative z-10">
+            
+            <div class="flex flex-col md:flex-row justify-between items-end mb-16 border-b border-white/20 pb-8">
+                <div class="max-w-2xl">
+                    <span class="text-brand-accent font-bold uppercase tracking-widest text-xs mb-2 block">Editorial</span>
+                    <h2 class="text-5xl md:text-7xl font-headline uppercase leading-none mb-4">Campus<br>Chronicles</h2>
+                    <p class="text-gray-300 text-lg font-light max-w-md">
+                        Mendefinisikan ulang gaya akademis. Perpaduan antara kenyamanan belajar dan estetika jalanan untuk semester baru Anda.
+                    </p>
+                </div>
+                <div class="mt-8 md:mt-0">
+                    <a href="collection.html" class="inline-flex items-center gap-2 border border-white px-6 py-3 uppercase font-bold text-xs tracking-widest hover:bg-white hover:text-[#1a3c2f] transition duration-300">
+                        Explore Full Lookbook <i class="fa-solid fa-arrow-right"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-6 h-auto md:h-[600px]">
+                
+                <div class="md:col-span-6 relative group overflow-hidden cursor-pointer bg-gray-800">
+                    <img src="https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?q=80&w=1000&auto=format&fit=crop" 
+                         class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-700 ease-out" 
+                         alt="The Creative">
+                    
+                    <div class="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black/90 to-transparent translate-y-4 group-hover:translate-y-0 transition duration-500">
+                        <div class="flex items-center gap-3 mb-2">
+                            <span class="bg-brand-accent text-[#1a3c2f] text-[10px] font-bold px-2 py-1 uppercase">Arts & Design</span>
+                        </div>
+                        <h3 class="text-3xl font-headline uppercase mb-2">The Creative Soul</h3>
+                        <p class="text-sm text-gray-300 line-clamp-2 mb-4 opacity-0 group-hover:opacity-100 transition delay-100">
+                            Untuk Anda yang berekspresi lewat karya. Padukan Tote Bag Visval dengan sneakers Compass Gazelle yang penuh warna.
+                        </p>
+                        <span class="text-xs font-bold underline decoration-brand-accent underline-offset-4">Shop The Look</span>
+                    </div>
+                </div>
+
+                <div class="md:col-span-6 flex flex-col gap-6">
+                    
+                    <div class="flex-1 relative group overflow-hidden cursor-pointer bg-gray-800">
+                        <img src="https://images.unsplash.com/photo-1485846234645-a62644f84728?q=80&w=1000&auto=format&fit=crop" 
+                             class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-700 ease-out" 
+                             alt="The Techie">
+                        
+                        <div class="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-black/90 to-transparent">
+                            <div class="flex justify-between items-end">
+                                <div>
+                                    <span class="bg-white text-[#1a3c2f] text-[10px] font-bold px-2 py-1 uppercase mb-2 inline-block">Engineering</span>
+                                    <h3 class="text-2xl font-headline uppercase">Tech Focused</h3>
+                                </div>
+                                <div class="w-10 h-10 bg-brand-accent rounded-full flex items-center justify-center text-[#1a3c2f] opacity-0 group-hover:opacity-100 transform translate-x-4 group-hover:translate-x-0 transition duration-300">
+                                    <i class="fa-solid fa-arrow-right"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex-1 grid grid-cols-2 gap-6">
+                        <div class="relative group overflow-hidden cursor-pointer bg-gray-800">
+                            <img src="https://images.unsplash.com/photo-1552346154-21d32810aba3?q=80&w=1000&auto=format&fit=crop" 
+                                 class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-105 transition duration-700" 
+                                 alt="Shoes Focus">
+                            <div class="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 group-hover:opacity-100 transition duration-300">
+                                <span class="border border-white px-4 py-2 uppercase font-bold text-xs tracking-widest">Sneakers</span>
+                            </div>
+                        </div>
+                        <a href="collection.html?category=student_promo" class="bg-brand-accent text-[#1a3c2f] p-6 flex flex-col justify-center items-start group cursor-pointer hover:bg-white transition duration-300 block h-full">
+    <i class="fa-solid fa-tags text-4xl mb-4 opacity-50"></i>
+    <h3 class="text-xl font-headline uppercase mb-2">Student<br>Bundles</h3>
+    <p class="text-xs font-bold opacity-70 mb-4">Save 20% Off</p>
+    <div class="w-8 h-8 border border-[#1a3c2f] rounded-full flex items-center justify-center group-hover:bg-[#1a3c2f] group-hover:text-white transition mt-auto">
+        <i class="fa-solid fa-arrow-right"></i>
+    </div>
+</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-12 flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-gray-400 border-t border-white/10 pt-4">
+                <span>Campuss® International</span>
+                <span class="hidden md:inline">Based in Jakarta, Indonesia</span>
+                <span>Est. 1998</span>
+            </div>
+        </div>
+    </section>
+
+   <section id="shop" class="bg-white text-brand-green">
+        <div class="container mx-auto px-4 md:px-12 py-20"> 
+            
+            <div class="flex flex-col md:flex-row justify-between items-end mb-8 border-b-2 border-brand-green pb-6">
+                <h2 class="text-4xl md:text-6xl font-headline uppercase">Selected<br>Goods</h2>
+                <div class="text-sm font-bold uppercase tracking-widest opacity-60">Vol. 01 — 2024</div>
+            </div>
+
+            <div class="flex flex-col gap-6 mb-12">
+                
+                <div class="flex flex-col lg:flex-row gap-4 justify-end items-center bg-gray-50 p-4 rounded-sm">
+                    
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 w-full lg:w-auto">
+                        
+                        <select id="categoryFilter" class="w-full bg-white border border-gray-300 py-3 px-2 text-[10px] md:text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-green cursor-pointer">
+                            <option value="all">All Items</option>
+                            <option value="shoe">Shoes</option>
+                            <option value="shirt">Apparel</option>
+                            <option value="pant">Pants</option>
+                            <option value="bag">Bags</option>
+                            <option value="stationery">Stationery</option>
+                        </select>
+
+                        <select id="genderFilter" class="w-full bg-white border border-gray-300 py-3 px-2 text-[10px] md:text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-green cursor-pointer">
+                            <option value="all">Gender</option>
+                            <option value="Men">Men</option>
+                            <option value="Women">Women</option>
+                            <option value="Unisex">Unisex</option>
+                        </select>
+
+                        <select id="priceFilter" class="w-full bg-white border border-gray-300 py-3 px-2 text-[10px] md:text-xs font-bold uppercase tracking-widest focus:outline-none focus:border-brand-green cursor-pointer">
+                            <option value="all">Price</option>
+                            <option value="under_500">&lt; 500k</option>
+                            <option value="500_800">500k-800k</option>
+                            <option value="above_800">&gt; 800k</option>
+                        </select>
+
+                        <button id="resetBtn" class="bg-gray-200 text-gray-600 hover:bg-red-500 hover:text-white py-3 px-4 font-bold uppercase text-[10px] md:text-xs tracking-widest transition flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-rotate-right"></i> Reset
+                        </button>
+                    </div>
+                </div>
+
+                <div class="flex gap-4 overflow-x-auto pb-2 border-b border-gray-200 no-scrollbar">
+                    <button class="filter-btn active px-6 py-2 border-b-2 border-brand-green text-brand-green font-bold uppercase text-xs tracking-widest transition whitespace-nowrap" data-filter="all">All View</button>
+                    <button class="filter-btn px-6 py-2 border-b-2 border-transparent text-gray-400 font-bold uppercase text-xs tracking-widest transition hover:text-brand-green whitespace-nowrap" data-filter="New">New Arrival</button>
+                    <button class="filter-btn px-6 py-2 border-b-2 border-transparent text-gray-400 font-bold uppercase text-xs tracking-widest transition hover:text-brand-green whitespace-nowrap" data-filter="Best Seller">Best Seller</button>
+                    <button class="filter-btn px-6 py-2 border-b-2 border-transparent text-gray-400 font-bold uppercase text-xs tracking-widest transition hover:text-brand-green whitespace-nowrap" data-filter="Sale">On Sale</button>
+                </div>
+            </div>
+        
+            <div id="grid-top" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-10 min-h-[300px]"></div>
+        </div>
+
+        <div id="exclusive-showcase" class="w-full bg-brand-green text-brand-bone overflow-hidden relative mt-16"></div>
+    </section>
+
+  <section class="py-16 border-t border-gray-200 bg-gray-50">
+    <div class="container mx-auto px-6">
+        
+        <div class="text-center mb-12">
+            <h2 class="text-2xl md:text-3xl font-headline uppercase tracking-widest text-[#1a3c2f] mb-2">Our Top Brands</h2>
+            <div class="w-16 h-0.5 bg-[#1a3c2f] mx-auto"></div>
+        </div>
+
+        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-10 items-center justify-items-center">
+            
+            <div class="w-full flex justify-center">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQNDqNbAZl4XhV8OkizQ29XTbIqAkjl-qWhQ&s" alt="Compass" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="https://plugolive.s3.ap-southeast-1.amazonaws.com/vendors/11367/assets/image/1741586539641-Kanky_Logo_Header-removebg-preview.png" alt="Kanky" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRztgn0Y-rxgJjWcLks8H9jTFryJAvUAtszSg&s" alt="Erigo" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="./assets/rucas-removebg-preview.png" alt="Rucas" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="https://media.giphy.com/headers/Thanksinsomniastore/oOyhngMWG7UZ.jpg" alt="ThanksInsomnia" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkyfssKJrYcBCC7ljuz3e3ODiDQJyKpXwxLg&s" alt="Eiger" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="https://www.bloods-industries.co/wp-content/uploads/2019/09/bloods-logo-black-main.png" alt="Bloods" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+            <div class="w-full flex justify-center">
+                <img src="./assets/joyko-Photoroom.png" alt="Joyko" class="h-28 md:h-32 w-auto object-contain mx-auto">
+            </div>
+
+        </div>
+    </div>
+</section>
+
+    <footer class="bg-brand-green text-brand-bone pt-24 pb-8 overflow-hidden relative">
+        <div class="absolute top-0 left-0 w-full overflow-hidden opacity-10 pointer-events-none">
+            <h1 class="text-[20vw] font-headline leading-none text-center whitespace-nowrap">CAMPUSS</h1>
+        </div>
+        <div class="container mx-auto px-6 relative z-10">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
+                <div class="space-y-6">
+                    <h4 class="font-bold text-lg uppercase tracking-widest border-b border-white/20 pb-2">Navigate</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Home</a></li>
+                        <li><a href="#" class="hover:text-white transition">Shop All</a></li>
+                        <li><a href="#" class="hover:text-white transition">Stories</a></li>
+                        <li><a href="#" class="hover:text-white transition">Size Guide</a></li>
+                    </ul>
+                </div>
+                <div class="space-y-6">
+                    <h4 class="font-bold text-lg uppercase tracking-widest border-b border-white/20 pb-2">Connect</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Instagram</a></li>
+                        <li><a href="#" class="hover:text-white transition">Twitter / X</a></li>
+                        <li><a href="#" class="hover:text-white transition">TikTok</a></li>
+                        <li><a href="#" class="hover:text-white transition">Spotify</a></li>
+                    </ul>
+                </div>
+                <div class="col-span-1 md:col-span-2 space-y-6">
+                    <h4 class="font-bold text-lg uppercase tracking-widest border-b border-white/20 pb-2">Newsletter</h4>
+                    <p class="text-2xl font-light max-w-md">Join the movement. Get early access to limited drops.</p>
+                    <form class="flex border-b border-brand-bone pb-4">
+                        <input type="email" placeholder="YOUR EMAIL ADDRESS" class="bg-transparent w-full outline-none text-brand-bone placeholder-gray-500 uppercase font-bold text-lg">
+                        <button type="submit" class="text-brand-bone hover:text-brand-accent transition uppercase font-bold">Submit</button>
+                    </form>
+                </div>
+            </div>
+            <div class="flex flex-col md:flex-row justify-between items-center text-xs text-gray-500 font-mono border-t border-white/10 pt-8">
+                <p>&copy; 2024 CAMPUSS. JAKARTA.</p>
+                <div class="flex gap-4 mt-4 md:mt-0">
+                    <span>PRIVACY</span>
+                    <span>TERMS</span>
+                    <span>ACCESSIBILITY</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div id="authModal" class="fixed inset-0 z-[100] hidden">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="closeModalArea"></div>
+        <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full max-w-md bg-brand-bone text-brand-green p-8 md:p-12 shadow-2xl transform transition-all">
+            <button id="closeModalBtn" class="absolute top-4 right-4 text-2xl hover:text-brand-accent transition"><i class="fa-solid fa-times"></i></button>
+
+            <div class="text-center mb-8">
+                <h2 class="text-4xl font-headline uppercase mb-2" id="modalTitle">Welcome Back</h2>
+                <p class="text-sm text-gray-500 uppercase tracking-widest" id="modalSubtitle">Login to continue</p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-2">Email Address</label>
+                    <input type="email" id="loginEmail" required placeholder="name@example.com" class="w-full bg-transparent border-b-2 border-brand-green py-2 outline-none focus:border-brand-accent transition placeholder-gray-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-2">Password</label>
+                    <input type="password" id="loginPass" required class="w-full bg-transparent border-b-2 border-brand-green py-2 outline-none focus:border-brand-accent transition placeholder-gray-400">
+                </div>
+                <button type="submit" class="w-full bg-brand-green text-brand-bone py-4 font-bold uppercase tracking-widest hover:bg-brand-accent hover:text-white transition">
+                    Sign In
+                </button>
+                <p class="text-center text-xs mt-4">
+                    Don't have an account? <span id="toRegister" class="font-bold cursor-pointer underline hover:text-brand-accent">Register Here</span>
+                </p>
+            </form>
+
+            <form id="registerForm" class="space-y-6 hidden">
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-2">Email Address</label>
+                    <input type="email" id="regEmail" required placeholder="name@example.com" class="w-full bg-transparent border-b-2 border-brand-green py-2 outline-none focus:border-brand-accent transition placeholder-gray-400">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold uppercase tracking-widest mb-2">Create Password</label>
+                    <input type="password" id="regPass" required class="w-full bg-transparent border-b-2 border-brand-green py-2 outline-none focus:border-brand-accent transition placeholder-gray-400">
+                </div>
+                <button type="submit" class="w-full border-2 border-brand-green text-brand-green py-4 font-bold uppercase tracking-widest hover:bg-brand-green hover:text-brand-bone transition">
+                    Create Account
+                </button>
+                <p class="text-center text-xs mt-4">
+                    Already have an account? <span id="toLogin" class="font-bold cursor-pointer underline hover:text-brand-accent">Login Here</span>
+                </p>
+            </form>
+        </div>
+    </div>
+
+    <div id="preOrderModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-sm" id="closePreOrderArea"></div>
+        
+        <div class="relative w-full max-w-lg bg-white p-8 shadow-2xl rounded-sm max-h-[90vh] overflow-y-auto z-10">
+            <button id="closePreOrderBtn" class="absolute top-4 right-4 text-xl hover:text-red-500 transition"><i class="fa-solid fa-times"></i></button>
+            
+            <div class="text-center mb-6 border-b border-gray-100 pb-4">
+                <span class="bg-brand-accent text-white text-[10px] font-bold px-2 py-1 uppercase tracking-widest rounded mb-2 inline-block">Limited Batch</span>
+                <h2 class="text-3xl font-headline uppercase text-[#1a3c2f]">Pre-Order Form</h2>
+                <p class="text-xs text-gray-400 mt-1">Estimasi Pengiriman: <span id="estDateDisplay" class="font-bold text-[#1a3c2f]">...</span></p>
+            </div>
+
+            <form id="preOrderForm" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-gray-500">Full Name</label>
+                        <input type="text" id="poName" required class="w-full border border-gray-300 p-3 text-sm focus:border-[#1a3c2f] outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-gray-500">Phone Number</label>
+                        <input type="tel" id="poPhone" required class="w-full border border-gray-300 p-3 text-sm focus:border-[#1a3c2f] outline-none">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-gray-500">Email Address</label>
+                    <input type="email" id="poEmail" required class="w-full border border-gray-300 p-3 text-sm focus:border-[#1a3c2f] outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-gray-500">Shipping Address</label>
+                    <textarea id="poAddress" required rows="2" class="w-full border border-gray-300 p-3 text-sm focus:border-[#1a3c2f] outline-none"></textarea>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] font-bold uppercase tracking-widest mb-1 text-gray-500">Payment Method</label>
+                    <div class="relative">
+                        <select id="poPaymentMethod" class="w-full border border-gray-300 p-3 text-sm focus:border-[#1a3c2f] outline-none appearance-none bg-white">
+                            <option value="">Select Method</option>
+                            <option value="bca_va">BCA Virtual Account</option>
+                            <option value="mandiri_va">Mandiri Virtual Account</option>
+                            <option value="qris">QRIS (Scan Barcode)</option>
+                            <option value="cod">Cash On Delivery (COD)</option>
+                        </select>
+                        <i class="fa-solid fa-chevron-down absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+                    </div>
+                </div>
+                
+                <div id="poPaymentInstruction" class="hidden bg-gray-50 p-4 border border-gray-200 text-center transition-all"></div>
+
+                <div class="pt-4 border-t border-gray-100 flex justify-between items-center">
+                    <div>
+                        <p class="text-xs text-gray-500">Total Payment</p>
+                        <p class="text-xl font-bold text-[#1a3c2f]">IDR 1.250.000</p>
+                    </div>
+                    <button type="submit" class="bg-[#1a3c2f] text-white px-8 py-3 font-bold uppercase tracking-widest hover:bg-brand-accent transition shadow-lg text-xs">
+                        Confirm Pre-Order
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<div id="mobileMenu" class="fixed inset-0 w-full h-full bg-white z-[9999] transform translate-x-full transition-transform duration-300 ease-in-out md:hidden flex flex-col">
+    <div class="px-6 py-6 flex justify-between items-center border-b border-gray-100 bg-white">
+        <span class="text-2xl font-headline tracking-tighter text-[#1a3c2f]">MENU</span>
+        <button id="closeMobileMenuBtn" class="text-3xl text-[#1a3c2f] hover:text-red-500 transition"><i class="fa-solid fa-times"></i></button>
+    </div>
+
+    <div class="p-6">
+        <div class="relative w-full">
+            <input type="text" id="mobileSearchInput" placeholder="SEARCH PRODUCT..." class="w-full bg-gray-50 border-b-2 border-gray-200 focus:border-[#1a3c2f] py-4 pl-3 pr-10 text-sm font-bold uppercase tracking-widest focus:outline-none transition">
+            <i class="fa-solid fa-magnifying-glass absolute right-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+        </div>
+    </div>
+
+    <div class="flex-1 px-8 flex flex-col gap-6 overflow-y-auto">
+        <a href="index.html" class="text-3xl font-headline uppercase text-[#1a3c2f] hover:text-green-700">Home</a>
+        <a href="index.html#shop" class="text-3xl font-headline uppercase text-[#1a3c2f] hover:text-green-700">Shop</a>
+        <a href="index.html#exclusive-showcase" class="text-3xl font-headline uppercase text-[#1a3c2f] hover:text-green-700">Campaign</a>
+        <a href="collection.html" class="text-3xl font-headline uppercase text-[#1a3c2f] hover:text-green-700">Collections</a>
+        <a href="profile.html" class="text-3xl font-headline uppercase text-[#1a3c2f] hover:text-green-700">My Account</a>
+    </div>
+</div>
+
+    <script src="js/animations.js"></script>
+    <script src="js/products.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/slider.js"></script>
+
+</body>
+</html>

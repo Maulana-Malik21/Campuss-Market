@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - COMPASS®</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Anton&family=Manrope:wght@300;400;600&display=swap" rel="stylesheet">
+    <script src="js/theme-config.js"></script>
+</head>
+<body class="font-body antialiased text-[#1a3c2f] bg-white">
+
+    <nav class="w-full px-6 py-4 flex justify-between items-center border-b border-gray-100 sticky top-0 bg-white z-50">
+        <a href="index.html" class="flex items-center gap-2 text-gray-500 hover:text-[#1a3c2f] transition">
+            <i class="fa-solid fa-arrow-left"></i> <span class="uppercase font-bold tracking-widest text-xs">Continue Shopping</span>
+        </a>
+        <a href="index.html" class="text-2xl font-headline tracking-tighter">COMPASS®</a>
+        <div class="text-sm font-bold uppercase"><i class="fa-solid fa-bag-shopping"></i> (0)</div>
+    </nav>
+
+    <div class="container mx-auto px-6 py-10 min-h-screen">
+        <h1 class="text-4xl font-headline uppercase mb-8">Your Bag</h1>
+
+        <div class="flex flex-col lg:flex-row gap-12">
+            
+            <div class="w-full lg:w-2/3" id="cartItemsContainer">
+                <div class="text-center py-10 text-gray-400">Loading cart...</div>
+            </div>
+
+            <div class="w-full lg:w-1/3">
+                <div class="bg-gray-50 p-6 sticky top-24">
+                    <h3 class="text-xl font-headline uppercase mb-6 border-b border-gray-200 pb-4">Order Summary</h3>
+                    
+                    <div class="flex justify-between mb-2 text-sm">
+                        <span class="text-gray-500">Selected Items</span>
+                        <span id="summaryCount" class="font-bold">0</span>
+                    </div>
+                    <div class="flex justify-between mb-4 text-sm">
+                        <span class="text-gray-500">Total Price</span>
+                        <span id="summaryTotal" class="font-bold text-lg">IDR 0</span>
+                    </div>
+
+                    <p class="text-xs text-gray-400 mb-6 leading-relaxed">
+                        Tax included. Shipping calculated at checkout. Please select items to proceed.
+                    </p>
+
+                    <button id="checkoutBtn" class="w-full bg-gray-300 text-white py-4 font-bold uppercase tracking-widest cursor-not-allowed transition" disabled>
+                        Checkout Selected
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="paymentModal" class="fixed inset-0 z-[100] hidden flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/70 backdrop-blur-sm" id="closePaymentArea"></div>
+    
+    <div class="relative w-full max-w-lg bg-white p-6 md:p-8 shadow-2xl rounded-sm max-h-[90vh] overflow-y-auto z-10">
+        <button id="closePaymentBtn" class="absolute top-4 right-4 text-xl hover:text-red-500 transition"><i class="fa-solid fa-times"></i></button>
+        <div class="text-center mb-6">
+            <h2 class="text-3xl font-headline uppercase text-[#1a3c2f] mb-2">Payment</h2>
+            <p class="text-xs text-gray-500 uppercase tracking-widest">Secure Checkout</p>
+        </div>
+        
+        <div id="paymentItemsList" class="max-h-32 overflow-y-auto mb-4 bg-gray-50 p-2 text-xs space-y-2 border border-gray-100"></div>
+        
+        <div class="flex justify-between font-bold border-t border-gray-200 pt-4 mb-6 text-lg">
+            <span>Total to Pay:</span>
+            <span id="payModalTotal">IDR 0</span>
+        </div>
+
+        <form id="paymentForm" class="space-y-4">
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1">Full Name</label>
+                <input type="text" id="payNameInput" required class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm">
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1">Shipping Address</label>
+                <textarea id="payAddressInput" required rows="2" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm"></textarea>
+            </div>
+            <div>
+                <label class="block text-xs font-bold uppercase tracking-widest mb-1">Payment Method</label>
+               <select id="paymentMethodSelect" class="w-full border border-gray-300 p-3 text-sm focus:outline-none focus:border-[#1a3c2f] rounded-sm bg-white appearance-none cursor-pointer">
+    <option value="">Select Payment Method</option>
+    <option value="bca_va">BCA Virtual Account</option>
+    <option value="mandiri_va">Mandiri Virtual Account</option>
+    <option value="qris">QRIS / E-Wallet</option>
+    <option value="cod">Cash On Delivery (COD)</option> </select>
+                </select>
+            </div>
+            
+            <div id="paymentInstruction" class="hidden"></div>
+            
+            <button type="submit" id="payButton" class="w-full bg-[#1a3c2f] text-white py-4 font-bold uppercase tracking-widest hover:bg-[#2c5f4b] transition mt-4 flex justify-center items-center gap-2">
+                <span>Confirm Payment</span>
+            </button>
+        </form>
+    </div>
+</div>
+
+    <script src="js/products.js"></script>
+    <script src="js/cart.js"></script>
+</body>
+</html>
